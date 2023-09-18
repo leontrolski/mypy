@@ -3522,6 +3522,22 @@ test(C)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P"
          # N:         def foo() -> List[str]
 [builtins fixtures/isinstancelist.pyi]
 
+
+[case testProtocolClassObjectGenericBoundTypeVar]
+from typing import Generic, Protocol, TypeVar
+T = TypeVar("T")
+V = TypeVar("V")
+K = TypeVar("K", bound=int)
+
+class Gen(Generic[T, K]): ...
+class Foo(Protocol[T]):
+    def g(self, t: Gen[T, K]) -> K: ...
+class Bar(Generic[T]):
+    def g(self, t: Gen[T, K]) -> K: ...
+
+def test(v: V) -> None:
+    x: Foo[V] = Bar[V]()  # OK
+
 [case testProtocolClassObjectSelfTypeInstanceMethod]
 from typing import Protocol, TypeVar, Union
 

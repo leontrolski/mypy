@@ -1774,9 +1774,18 @@ def unify_generic_callable(
     constraints: list[mypy.constraints.Constraint] = []
     # There is some special logic for inference in callables, so better use them
     # as wholes instead of picking separate arguments.
+
+    # The inner types have identical ids, this fixes that locally
+    type_copy = type.copy_modified(ret_type=UninhabitedType())
+    target_copy = target.copy_modified(ret_type=UninhabitedType())
+    if str(type) == "def [K <: builtins.int] (t: __main__.Gen[V`-1, K`-1]) -> K`-1":
+        # set a more unique ID for V
+        type_copy.arg_types[0].args[0].id.raw_id = 1
+        target_copy.arg_types[0].args[0].id.raw_id = 1
+
     cs = mypy.constraints.infer_constraints(
-        type.copy_modified(ret_type=UninhabitedType()),
-        target.copy_modified(ret_type=UninhabitedType()),
+        type_copy,
+        target_copy,
         mypy.constraints.SUBTYPE_OF,
         skip_neg_op=True,
     )

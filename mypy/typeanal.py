@@ -1025,6 +1025,8 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 type_guard=special,
                 unpack_kwargs=unpacked_kwargs,
             )
+        # At this point,
+        # ret == def [K <: builtins.int] (self: __main__.Foo[T`1], t: __main__.Gen[T`1, K`-1]) -> K`-1
         return ret
 
     def anal_type_guard(self, t: Type) -> Type | None:
